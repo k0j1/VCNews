@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rss_site_url0001">https://coinpost.jp/rss.xml</string>
+    <string name="rss_site_url0002">https://jp.cointelegraph.com/rss</string>
+    <string name="rss_site_url0003">https://coinmatome.com/index.rdf</string>
+    <string name="rss_site_url0004">http://blog.livedoor.jp/kumokumowatawata/index.rdf</string>
+    <string name="rss_site_url0005">http://minnanocoin.matometa-antenna.com/coinchoice.net/index.rdf</string>
+    <string name="rss_site_url0006">http://minnanocoin.matometa-antenna.com/www.coinjinja.com/index.rdf</string>
+    <string name="rss_site_url0007">http://2ch-ranking.net/rss/cryptocoin.rdf</string>
+    <string name="rss_site_url0008">https://news.fxcoin.jp/feed/rss2.xml</string>
+    <string name="rss_site_url0009">https://bitpress.jp/rss2.xml</string>
+
+    <!-- RSSサイトアドレス -->
+    <string-array name="rss_url">
+        <item>@string/rss_site_url0001</item>
+        <item>@string/rss_site_url0002</item>
+        <item>@string/rss_site_url0003</item>
+        <item>@string/rss_site_url0004</item>
+        <item>@string/rss_site_url0005</item>
+        <item>@string/rss_site_url0006</item>
+        <item>@string/rss_site_url0007</item>
+        <item>@string/rss_site_url0008</item>
+        <item>@string/rss_site_url0009</item>
+        <!--
+        <item>https://jp.cointelegraph.com/rss/category/top-10-cryptocurrencies</item>
+        <item>https://coinchoice.net/feed/</item>
+        <item>http://minnanocoin.matometa-antenna.com/coinmatomesokuho.blog.jp/index.rdf</item>
+        <item>http://minnanocoin.matometa-antenna.com/www.bchnewssokuho.com/index.rdf</item>
+        -->
+    </string-array>
+
+    <string name="rss_site_name0001">【Coinpost】</string>
+    <string name="rss_site_name0002">【Cointelegraph】</string>
+    <string name="rss_site_name0003">【仮想通貨まとめ】</string>
+    <string name="rss_site_name0004">【コイン速報】</string>
+    <string name="rss_site_name0005">【CoinChoice】</string>
+    <string name="rss_site_name0006">【COINJINJA】</string>
+    <string name="rss_site_name0007">【仮想通貨板:2ch勢いランキング】</string>
+    <string name="rss_site_name0008">【FXcoin】</string>
+    <string name="rss_site_name0009">【BITPRESS】</string>
+
+    <!-- RSSサイト名 -->
+    <string-array name="rss_site_name">
+        <item>@string/rss_site_name0001</item>
+        <item>@string/rss_site_name0002</item>
+        <item>@string/rss_site_name0003</item>
+        <item>@string/rss_site_name0004</item>
+        <item>@string/rss_site_name0005</item>
+        <item>@string/rss_site_name0006</item>
+        <item>@string/rss_site_name0007</item>
+        <item>@string/rss_site_name0008</item>
+        <item>@string/rss_site_name0009</item>
+        <!--
+        <item>【コインテレグラフ ジャパン】</item>
+        <item>【CoinChoice(2)】</item>
+        <item>【仮想通貨まとめNews】</item>
+        <item>【Bitcoin SVニュース速報】</item>
+        -->
+    </string-array>
+
+    <string-array name="setting_thema_labels">
+        <item>ライトテーマ</item>
+        <item>ダークテーマ</item>
+    </string-array>
+    <string-array name="setting_thema_values">
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+</resources>

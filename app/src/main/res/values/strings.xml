@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">COINNEWSまとめ</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">COINNEWSまとめ</string>
+    <string name="nav_header_subtitle">Powered By Yamato Creation</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">設定</string>
+    <string name="action_about_page">開発元について</string>
+
+    <string name="menu_home">ホーム</string>
+    <string name="menu_bookmark">ブックマーク</string>
+    <string name="menu_history">履歴</string>
+    <string name="menu_setting">設定</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_about_page">開発元について</string>
+    <string name="menu_email">お問い合わせ</string>
+
+    <string name="dev_more_apps">他のアプリ</string>
+    <string name="dev_terms_of_use">プライバシーポリシーおよび利用規約</string>
+    <string name="dev_privacy_policy">プライバシーポリシー</string>
+    <string name="dev_copy_right" translatable="false">Copyrights © %1$d</string>
+
+</resources>

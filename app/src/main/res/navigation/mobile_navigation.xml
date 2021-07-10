@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.takaharabooks.app.vcnews.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_bookmark"
+            app:destination="@id/nav_bookmark" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_history"
+            app:destination="@id/nav_history" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_setting"
+            app:destination="@id/nav_setting" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_about_page"
+            app:destination="@id/nav_about_page" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_bookmark"
+        android:name="com.takaharabooks.app.vcnews.ui.bookmark.BookmarkFragment"
+        android:label="@string/menu_bookmark"
+        tools:layout="@layout/fragment_bookmark" />
+
+    <fragment
+        android:id="@+id/nav_history"
+        android:name="com.takaharabooks.app.vcnews.ui.history.HistoryFragment"
+        android:label="@string/menu_history"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/nav_setting"
+        android:name="com.takaharabooks.app.vcnews.ui.setting.SettingFragment"
+        android:label="@string/menu_setting" />
+
+    <fragment
+        android:id="@+id/nav_about_page"
+        android:name="com.takaharabooks.app.vcnews.ui.about.AboutPageFragment"
+        android:label="@string/menu_about_page" />
+
+</navigation>

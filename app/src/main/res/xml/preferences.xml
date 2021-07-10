@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.setting.SettingFragment">
+
+    <PreferenceCategory android:title="表示設定">
+        <CheckBoxPreference
+            android:key="@string/settings_browser_key"
+            android:title="@string/settings_browser_title"
+            android:summaryOn="@string/settings_browser_summary_on"
+            android:summaryOff="@string/settings_browser_summary_off"
+            android:defaultValue="@bool/settings_browser_default" />
+        <ListPreference
+            android:key="@string/settings_thema_key"
+            android:title="@string/settings_thema_title"
+            android:entries="@array/setting_thema_labels"
+            android:entryValues="@array/setting_thema_values"
+            android:dialogTitle="@string/settings_thema_dialog_title"
+            android:defaultValue="@string/settings_thema_default" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="RSS取得サイト">
+        <!-- スイッチでON/OFF切り替えを行うPreference -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="setting.rss_site2.0001"
+            android:summary="@string/rss_site_url0001"
+            android:title="@string/rss_site_name0001" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="setting.rss_site2.0002"
+            android:summary="@string/rss_site_url0002"
+            android:title="@string/rss_site_name0002" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0009"
+            android:summary="@string/rss_site_url0009"
+            android:title="@string/rss_site_name0009" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0008"
+            android:summary="@string/rss_site_url0008"
+            android:title="@string/rss_site_name0008" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0003"
+            android:summary="@string/rss_site_url0003"
+            android:title="@string/rss_site_name0003" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0004"
+            android:summary="@string/rss_site_url0004"
+            android:title="@string/rss_site_name0004" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0005"
+            android:summary="@string/rss_site_url0005"
+            android:title="@string/rss_site_name0005" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0006"
+            android:summary="@string/rss_site_url0006"
+            android:title="@string/rss_site_name0006" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting.rss_site2.0007"
+            android:summary="@string/rss_site_url0007"
+            android:title="@string/rss_site_name0007" />
+    </PreferenceCategory>
+
+
+</androidx.preference.PreferenceScreen>

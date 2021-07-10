@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/item_container"
+    android:background="#00000000"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/item_sumb_img"
+        android:fitsSystemWindows="true"
+        android:scaleType="fitStart"
+        android:layout_margin="5dp"
+        android:layout_width="64dp"
+        android:layout_height="52dp"
+        android:layout_below="@+id/item_date"
+        android:layout_alignParentLeft="true"
+        />
+    <TextView
+        android:id="@+id/item_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/item_fav_img"
+        android:textColor="#72767B"
+        android:textSize="12sp" />
+    <ImageView
+        android:id="@+id/item_fav_img"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_icon_favorite_off"
+        />
+    <TextView
+        android:id="@+id/item_title"
+        android:layout_below="@+id/item_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/item_sumb_img"
+        android:layout_toLeftOf="@+id/item_fav_img"
+        android:textColor="@color/text_color"
+        android:textSize="18sp"
+        android:lines="2"
+        android:ellipsize="end" />
+    <TextView
+        android:id="@+id/item_site"
+        android:layout_below="@+id/item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="1234567890"
+        android:textColor="#72767B"
+        android:textSize="14sp" />
+</RelativeLayout>
