@@ -1,25 +1,28 @@
 # COINNEWSまとめ
 
-ANDROIDアプリとして公開中
+ANDROIDアプリとして公開中  
 
 
+<img alt='GooglePlay' src='https://github.com/k0j1/VCNews/blob/master/GooglePlayImage.png' width="640px"/>
+
+## Google Play
 
 https://play.google.com/store/apps/details?id=com.takaharabooks.app.vcnews
 
-<img src="https://play-lh.googleusercontent.com/n3_i8tBBSbnLOUJFXlL4aAeSF8EuDqnLOTP8yhiYB42VByeGr2XzDoTrnc9O-rA2Suz8=w3658-h2060-rw" width="320px">
+<a href='https://play.google.com/store/apps/details?id=com.takaharabooks.app.vcnews&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Google Play で手に入れよう' src='https://play.google.com/intl/ja/badges/static/images/badges/ja_badge_web_generic.png' width="160px"/></a>
 
+  
+  
 ## マーケット情報
 
 シンプルで読みやすい！仮想通貨・暗号資産のニュースはこのアプリで決まり！！
 
 【機能】  
-ブックマーク  
-履歴  
-アプリ内ウェブビュー  
+* ブックマーク  
+* 履歴  
+* アプリ内ウェブビュー  
+* ダークテーマに対応  
 
 【搭載予定】  
-通貨別ソート機能  
-
-【その他】  
-ダークテーマに対応  
+* 通貨別ソート機能  
 
