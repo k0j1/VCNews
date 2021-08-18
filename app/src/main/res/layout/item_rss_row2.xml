@@ -15,20 +15,21 @@
         android:layout_width="64dp"
         android:layout_height="52dp"
         android:layout_below="@+id/item_date"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         />
     <TextView
         android:id="@+id/item_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/item_fav_img"
+        android:layout_toStartOf="@+id/item_fav_img"
+        android:text="123456789012345678901234567890"
         android:textColor="#72767B"
         android:textSize="12sp" />
     <ImageView
         android:id="@+id/item_fav_img"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:src="@drawable/ic_icon_favorite_off"
         />
     <TextView
@@ -36,8 +37,9 @@
         android:layout_below="@+id/item_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/item_sumb_img"
-        android:layout_toLeftOf="@+id/item_fav_img"
+        android:layout_toEndOf="@+id/item_sumb_img"
+        android:layout_toStartOf="@+id/item_fav_img"
+        android:text="123456789012345678901234567890"
         android:textColor="@color/text_color"
         android:textSize="18sp"
         android:lines="2"
@@ -47,7 +49,7 @@
         android:layout_below="@+id/item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:text="1234567890"
         android:textColor="#72767B"
         android:textSize="14sp" />

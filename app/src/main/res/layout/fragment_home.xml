@@ -15,20 +15,8 @@
             android:id="@+id/layout_rss_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_above="@+id/adView"/>
+            android:orientation="vertical"/>
 
-        <!-- Ad -->
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-2980262928639137/9972463179">
-        </com.google.android.gms.ads.AdView>
     </RelativeLayout>
 
     <ProgressBar

@@ -1,6 +1,6 @@
 package com.takaharabooks.app.vcnews.ui.common;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -56,6 +56,9 @@ public class ListViewFunc
      * リストの初期設定<br>
      * 2chから取得したデータを表示
      *
+     * @param	mActivity
+     * @param	m_dbData
+     * @param	items
      * @param	RssList
      * @param	Adapter
      * @return	none
@@ -107,9 +110,9 @@ public class ListViewFunc
     }
 
     // ダウンロードイメージのサイズ設定
-    public static void loadDLImage(Activity ac, String strUrl, ImageView image, String strImageIDName)
+    public static void loadDLImage(Context context, String strUrl, ImageView image, String strImageIDName)
     {
-        RequestManager rm = Glide.with(ac);
+        RequestManager rm = Glide.with(context);
         rm.load(strUrl).listener(createLoggerListener(strImageIDName + image.getId()))
         //.override() サイズ指定も可能
         .into(image);

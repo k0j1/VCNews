@@ -15,4 +15,13 @@
         <!-- Customize your theme here. -->
         <item name="android:textColorPrimary">@color/white</item>
     </style>
+
+    <style name="Theme.VCNews.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.VCNews.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.VCNews.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

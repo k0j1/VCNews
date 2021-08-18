@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Xml;
 
 import com.takaharabooks.app.vcnews.MainActivity;
-import com.takaharabooks.app.vcnews.ui.home.HomeFragment;
+import com.takaharabooks.app.vcnews.ui.home.HomeViewModel;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -24,21 +24,22 @@ import java.util.List;
 public class RssItemParserTask extends AsyncTask<ArrayList<String>, Integer, RssItem>
 {
     private MainActivity mActivity;
-    private HomeFragment mFragment;
+    //private HomeFragment mFragment;
+    private HomeViewModel mViewModel;
     private List<RssItem> mList;
     private ProgressDialog mProgressDialog;
 
     private String mSearchText = "";
-    private String mCategory = "";
+    private String mCategory;
     private boolean m_bCategory = false;
 
     // コンストラクタ
-    public RssItemParserTask(MainActivity activity, HomeFragment fragment)
+    public RssItemParserTask(MainActivity activity, HomeViewModel ViewModel)
     {
         mActivity = activity;
-        mFragment = fragment;
+        mViewModel = ViewModel;
         mCategory = "";
-        mList = new ArrayList<RssItem>();
+        mList = new ArrayList();
     }
 
     public void SetSearchText(String strSearchText)
@@ -69,8 +70,9 @@ public class RssItemParserTask extends AsyncTask<ArrayList<String>, Integer, Rss
     }
 
     // バックグラウンドにおける処理を担う。タスク実行時に渡された値を引数とする
+    @SafeVarargs
     @Override
-    protected RssItem doInBackground(ArrayList<String>... params) {
+    protected final RssItem doInBackground(ArrayList<String>... params) {
         RssItem result = null;
         try {
             // HTTP経由でアクセスし、InputStreamを取得する
@@ -111,11 +113,10 @@ public class RssItemParserTask extends AsyncTask<ArrayList<String>, Integer, Rss
         // ライト自動、画面向き自動に設定
         //mActivity.FinishSetting();
 
-        if(mFragment.isVisible()) {
-            // データ表示
-            mFragment.AddRssItem(mList);
-            //mFragment.InitCategory();
-            mFragment.InitListView(mList);
+        // フラグメント更新
+        if(mViewModel != null)
+        {
+            mViewModel.LoadFragment(mList);
         }
     }
 
@@ -130,7 +131,7 @@ public class RssItemParserTask extends AsyncTask<ArrayList<String>, Integer, Rss
             int eventType = parser.getEventType();
             RssItem currentItem = null;
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                String tag = null;
+                String tag;
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
                         tag = parser.getName();
@@ -150,7 +151,7 @@ public class RssItemParserTask extends AsyncTask<ArrayList<String>, Integer, Rss
                             {
                                 //日付が「Wed, 4 Jul 2001 12:08:56 -0700」のような場合の指定
                                 Date d = null;
-                                SimpleDateFormat df = null;
+                                SimpleDateFormat df;
                                 String strDate = parser.nextText();
                                 if(d == null)
                                 {
@@ -164,7 +165,7 @@ public class RssItemParserTask extends AsyncTask<ArrayList<String>, Integer, Rss
                                 if(d == null)
                                 {
                                     //日付が「Wed, 4 Jul 2001 12:08:56 -0700」のような場合の指定
-                                    df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", java.util.Locale.US);
+                                    df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US);
                                     try {
                                         d = df.parse(strDate);
                                     }catch(ParseException e){

@@ -1,7 +1,6 @@
 package com.takaharabooks.app.vcnews.ui.home;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,14 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.takaharabooks.app.vcnews.MainActivity;
 import com.takaharabooks.app.vcnews.R;
 import com.takaharabooks.app.vcnews.pref.DB_Data;
@@ -25,6 +16,7 @@ import com.takaharabooks.app.vcnews.ui.common.ListViewFunc;
 import com.takaharabooks.app.vcnews.ui.item.RssItem;
 import com.takaharabooks.app.vcnews.ui.item.RssItemListAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -37,16 +29,16 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel = null;
     private View mFragmentHome;
-    private AdView mAdView = null;
+    private RssItem mSearchItem = null;
+    public void setSearchSiteName(CharSequence strName){ mSearchItem = new RssItem(); mSearchItem.setSiteName(strName); }
 
     protected RssItemListAdapter mAdapter;
 //    protected SpinnerAdapter mSpinnerAdapter;
 //    protected ConbinateAdView m_csAd = null;
-    AdLoader mAdLoader;
     private DB_Data m_dbData = null;
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.main, menu);
     }
@@ -68,7 +60,6 @@ public class HomeFragment extends Fragment {
             mFragmentHome = inflater.inflate(R.layout.fragment_home, container, false);
 
             // 初回RSSデータ読み込み
-            InitAd();
             InitRssData();
         }
 //        final TextView textView = root.findViewById(R.id.text_home);
@@ -103,21 +94,45 @@ public class HomeFragment extends Fragment {
      * リストの初期設定<br>
      * 2chから取得したデータを表示
      *
-     * @param	items
+     * @param   items
      * @return	none
      ***********************************************************************************************/
     public void InitListView(List<RssItem> items)
     {
+        // mSearchItemがセットされている場合は表示リストを絞り込み
+        List<RssItem> dispItems;
+        if(mSearchItem != null && mSearchItem.getSiteName()!="すべて")
+        {
+            dispItems = new ArrayList();
+            for(int nIndex=0;nIndex<items.size();nIndex++)
+            {
+                RssItem item = items.get(nIndex);
+                String strSearch = mSearchItem.getSiteName().toString();
+                String strSiteName = item.getSiteName().toString();
+                if(strSearch.equals(strSiteName))
+                {
+                    dispItems.add(item);
+                }
+            }
+        }
+        else
+        {
+            dispItems = items;
+        }
         // プログレスバー削除
         ProgressBar progressBar = (ProgressBar) mFragmentHome.findViewById(R.id.progressbar);
         progressBar.setVisibility(View.INVISIBLE);
         // リスト表示
+        //int nColor = getContext().getColor(R.color.text_color);
+        //int nColor2 = getActivity().getColor(R.color.text_color);
+        //int nColor3 = requireContext().getColor(R.color.text_color);
+        //int nColor4 = requireActivity().getColor(R.color.text_color);
         ListView RssList = (ListView)mFragmentHome.findViewById(R.id.layout_rss_listview);
-        mAdapter = new RssItemListAdapter(this.getContext(), getActivity(), items, m_dbData);
+        mAdapter = new RssItemListAdapter(this.getContext(), this.getActivity(), dispItems, m_dbData);
         // アダプタをリストビューにセットする
         final ListViewFunc.DateComp dateComp = new ListViewFunc.DateComp();
         mAdapter.sort(dateComp);
-        ListViewFunc.InitListView((MainActivity)getActivity(), m_dbData, items, RssList, mAdapter);
+        ListViewFunc.InitListView((MainActivity)getActivity(), m_dbData, dispItems, RssList, mAdapter);
     }
 
     public void InitRssData()
@@ -136,10 +151,10 @@ public class HomeFragment extends Fragment {
                     }
                     else
                     {
-                        homeViewModel.ReloadItems().observe((MainActivity) getActivity(), item ->
-                        {
-                            // Update the UI.
-                        });
+//                        homeViewModel.ReloadItems().observe((MainActivity) getActivity(), item ->
+//                        {
+//                            // Update the UI.
+//                        });
                     }
                 }
             }
@@ -153,63 +168,6 @@ public class HomeFragment extends Fragment {
 //        {
 //            InitListView(mItems);
 //        }
-    }
-
-    /*************************************
-     * 広告の初期設定
-     **************************************/
-    public void InitAd()
-    {
-        if(mAdView != null) return;
-        mAdView = mFragmentHome.findViewById(R.id.adView);
-
-        MobileAds.initialize(getContext(), new OnInitializationCompleteListener()
-        {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus)
-            {
-            }
-        });
-        //MobileAds.openDebugMenu(getContext(),"ca-app-pub-2980262928639137/9972463179");
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                Log.v("AdLoad", "onAdLoaded");
-            }
-
-            @Override
-            public void onAdFailedToLoad(LoadAdError adError) {
-                // Code to be executed when an ad request fails.
-                Log.v("AdLoad", "onAdFailedToLoad:" + adError.toString());
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-                Log.v("AdLoad", "onAdOpened");
-            }
-
-            @Override
-            public void onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                Log.v("AdLoad", "onAdClicked");
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-                Log.v("AdLoad", "onAdClosed");
-            }
-        });
-        loadAd();
-    }
-    public void loadAd()
-    {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
     }
 
 //    public void InitAd()
