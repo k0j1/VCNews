@@ -14,27 +14,45 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
-public class HomeViewModel extends ViewModel
-{
-    MainActivity mActivity;
-    HomeFragment mFragment;
-    private SharedPreferences mPrefs;
+public class HomeViewModel extends ViewModel {
+    private MainActivity mActivity;
+    List<HomeFragment> mFragmentList = null;
+    private SharedPreferences mPrefs = null;
+    boolean mbLoading = false;
 
+    String[] strUrl;
+    String[] strName;
+    RssItemParserTask task;
+
+    private MutableLiveData<Boolean> mbLoadEnd;
+    public MutableLiveData<Boolean> getLoadEnd()
+    {
+        mbLoadEnd = new MutableLiveData();
+        mbLoadEnd.setValue(false);
+        return mbLoadEnd;
+    }
     private MutableLiveData<List<RssItem>> mItems;
     private MutableLiveData<List<RssItem>> mCategoryItems;
     public MutableLiveData<List<RssItem>> getItems(MainActivity ac, HomeFragment fragment)
     {
-        if(ac != null)
+        if(ac != null && mPrefs == null)
         {
             mActivity = ac;
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(ac);
+            strUrl = mActivity.getResources().getStringArray(R.array.rss_url);
+            strName = mActivity.getResources().getStringArray(R.array.rss_site_name);
         }
         if(fragment != null)
         {
-            mFragment = fragment;
+            if(mFragmentList == null)
+            {
+                mFragmentList = new ArrayList();
+            }
+            mFragmentList.add(fragment);
         }
-        if(mItems == null)
+        if(mPrefs != null && mFragmentList != null && mItems == null && !mbLoading)
         {
+            mbLoading = true;
             LoadRssItem(null, "");
         }
         return mItems;
@@ -79,19 +97,15 @@ public class HomeViewModel extends ViewModel
         // Webから読み込み
         if(null==mItems)
         {
-            mItems = new MutableLiveData<List<RssItem>>();
-            List<RssItem> items = new ArrayList<RssItem>();
+            mItems = new MutableLiveData();
+            List<RssItem> items = new ArrayList();
             mItems.setValue(items);
 
-            //MainActivity activity = (MainActivity)this.getActivity();
-            RssItemParserTask task = new RssItemParserTask(mActivity, mFragment);
-//            if(null!=strSearchText) task.SetSearchText(strSearchText);
-//            if(null!=strCategory) task.SetCategory(strCategory);
+            task = new RssItemParserTask(mActivity, this);
+
             // 全てから
-            ArrayList<String> strUrlArray = new ArrayList<String>();
-            ArrayList<String> strNameArray = new ArrayList<String>();
-            String strUrl[] = mActivity.getResources().getStringArray(R.array.rss_url);
-            String strName[] = mActivity.getResources().getStringArray(R.array.rss_site_name);
+            ArrayList<String> strUrlArray = new ArrayList();
+            ArrayList<String> strNameArray = new ArrayList();
             boolean bDefaultValue = true;
             for(int nIndex=0; nIndex<strName.length; nIndex++)
             {
@@ -109,7 +123,7 @@ public class HomeViewModel extends ViewModel
         // 取得済みのデータから絞込み
         else
         {
-            mCategoryItems = new MutableLiveData<List<RssItem>>();
+            mCategoryItems = new MutableLiveData();
             for(int nIndex=0; nIndex<mItems.getValue().size(); nIndex++)
             {
                 RssItem item = mItems.getValue().get(nIndex);
@@ -132,5 +146,23 @@ public class HomeViewModel extends ViewModel
             //mFragment.InitListView(mCategoryItems);
         }
 
+    }
+
+    public void LoadFragment(List<RssItem> list)
+    {
+        int nMax = mFragmentList.size();
+        for(int nIndex=0; nIndex<nMax; nIndex++)
+        {
+            HomeFragment frag = mFragmentList.get(nIndex);
+            if(frag.isVisible())
+            {
+                // データ表示
+                frag.AddRssItem(list);
+                //mFragment.InitCategory();
+                frag.InitListView(list);
+            }
+        }
+        mbLoading = false;
+        if(mbLoadEnd!=null) mbLoadEnd.setValue(true);
     }
 }

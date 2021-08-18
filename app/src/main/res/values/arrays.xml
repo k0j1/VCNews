@@ -29,6 +29,7 @@
         -->
     </string-array>
 
+    <string name="rss_site_name0000">【すべて】</string>
     <string name="rss_site_name0001">【Coinpost】</string>
     <string name="rss_site_name0002">【Cointelegraph】</string>
     <string name="rss_site_name0003">【仮想通貨まとめ】</string>
@@ -66,4 +67,11 @@
         <item>light</item>
         <item>dark</item>
     </string-array>
+    <integer-array name="custom_tab_colors">
+        <item>@color/light_blue_500</item>
+        <item>@color/cyan_500</item>
+        <item>@color/teal_500</item>
+        <item>@color/green_500</item>
+        <item>@color/light_green_500</item>
+    </integer-array>
 </resources>

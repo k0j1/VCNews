@@ -12,7 +12,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.takaharabooks.app.vcnews.pref.DB_Data;
 import com.takaharabooks.app.vcnews.ui.bookmark.BookmarkViewModel;
-import com.takaharabooks.app.vcnews.ui.history.HistoryViewModel;
 import com.takaharabooks.app.vcnews.ui.home.HomeViewModel;
 import com.takaharabooks.app.vcnews.ui.item.RssItem;
 
@@ -38,18 +37,19 @@ public class MainActivity extends AppCompatActivity
 
     private HomeViewModel mHomeViewModel;
     private BookmarkViewModel mBookmarkViewModel;
-    private HistoryViewModel mHistoryViewModel;
-    private SharedPreferences mPrefs;
+    //private HistoryViewModel mHistoryViewModel;
+    private SharedPreferences mPrefs = null;
     private DB_Data m_dbData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         // テーマ適用はonCreateより前に行う
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        changeDarkLightMode();
-
-        // onCreate
+        if(mPrefs == null)
+        {
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            changeDarkLightMode();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -62,6 +62,17 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // フローティングボタン
+        InitFloatButton();
+
+        // ナビゲーション
+        InitNavication();
+
+        // データ
+        InitViewModel();
+    }
+
+    void InitFloatButton()
+    {
         mFloatBtn = findViewById(R.id.fab);
         mFloatBtn.setOnClickListener(new View.OnClickListener()
         {
@@ -94,7 +105,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // ナビゲーション
+    }
+
+    void InitNavication()
+    {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navView = findViewById(R.id.nav_view);
 //        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
@@ -144,11 +158,13 @@ public class MainActivity extends AppCompatActivity
         });
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+    }
 
-        // データ
+    void InitViewModel()
+    {
         mHomeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         mBookmarkViewModel = new ViewModelProvider(this).get(BookmarkViewModel.class);
-        mHistoryViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
+        //mHistoryViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
     }
 
 //    @Override

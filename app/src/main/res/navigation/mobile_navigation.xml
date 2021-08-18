@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.takaharabooks.app.vcnews.ui.home.HomeFragment"
+        android:name="com.takaharabooks.app.vcnews.ui.home.HomeFragmentMulti"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home_multi" >
         <action
             android:id="@+id/action_nav_home_to_nav_bookmark"
             app:destination="@id/nav_bookmark" />
