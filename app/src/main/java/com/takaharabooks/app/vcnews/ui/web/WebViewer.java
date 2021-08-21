@@ -3,21 +3,17 @@ package com.takaharabooks.app.vcnews.ui.web;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
@@ -31,8 +27,6 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.takaharabooks.app.vcnews.R;
 import com.takaharabooks.app.vcnews.pref.DB_Data;
@@ -162,13 +156,8 @@ public class WebViewer extends AppCompatActivity
      **************************************/
     public void InitAd()
     {
-        MobileAds.initialize(this, new OnInitializationCompleteListener()
-        {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus)
-            {
+        MobileAds.initialize(this, initializationStatus -> {
 
-            }
         });
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -231,28 +220,21 @@ public class WebViewer extends AppCompatActivity
         toolbar.setNavigationIcon(R.drawable.ic_icon_arrow_back);
 
         //リスナー定義
-        toolbar.setNavigationOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         // フローティングボタン
         FloatingActionButton fab = findViewById(R.id.fav_btn);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                // 更新
-                m_csWeb.reload();
-            }
+        fab.setOnClickListener(view -> {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, m_sItem.getLink());
+            sendIntent.setType("text/plain");
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
         });
 
         // プログレスバー
-        mProgBar = (ProgressBar)findViewById(R.id.loadProgressBar);
+        mProgBar = findViewById(R.id.loadProgressBar);
         mProgBar.setMax(100);
         mProgBar.setProgress(0);
 
@@ -280,16 +262,16 @@ public class WebViewer extends AppCompatActivity
     {
         try{
             // WebViewで使うcookieの準備
-            CookieSyncManager.createInstance(this);
-            CookieSyncManager.getInstance().startSync();
             CookieManager.getInstance().setAcceptCookie(true);
-            CookieManager.getInstance().removeExpiredCookie();
+            //CookieManager.getInstance().removeExpiredCookie();
+            //CookieManager.getInstance().removeAllCookies();
+            CookieManager.getInstance().flush();
         }catch(Exception e){
             e.printStackTrace();
         }
 
         // WebViewの設定
-        m_csWeb = (WebView)findViewById(R.id.web);
+        m_csWeb = findViewById(R.id.web);
 
         //javascriptの設定はデフォルトで無効のためjavascriptを有効にする
         try{
@@ -298,10 +280,7 @@ public class WebViewer extends AppCompatActivity
             m_csWeb.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
             // プラグインの設定
             m_csWeb.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
-        }catch(NoClassDefFoundError e){
-            e.printStackTrace();
-            Toast.makeText(this, "Javascript Setting Error", Toast.LENGTH_SHORT).show();
-        }catch(Exception e){
+        }catch(NoClassDefFoundError | Exception e){
             e.printStackTrace();
             Toast.makeText(this, "Javascript Setting Error", Toast.LENGTH_SHORT).show();
         }
@@ -316,13 +295,7 @@ public class WebViewer extends AppCompatActivity
             File databaseDir = new File(getCacheDir(), databasePath);
             databaseDir.mkdirs();
             m_csWeb.getSettings().setDatabasePath(databaseDir.toString());
-        }catch(NoClassDefFoundError e){
-            e.printStackTrace();
-            Toast.makeText(this, "HTML5 Setting Error", Toast.LENGTH_SHORT).show();
-        }catch(IllegalStateException e){
-            e.printStackTrace();
-            Toast.makeText(this, "HTML5 Setting Error", Toast.LENGTH_SHORT).show();
-        }catch(Exception e){
+        } catch(NoClassDefFoundError | Exception e){
             e.printStackTrace();
             Toast.makeText(this, "HTML5 Setting Error", Toast.LENGTH_SHORT).show();
         }
@@ -337,34 +310,27 @@ public class WebViewer extends AppCompatActivity
 
         // タッチ処理
         try{
-            m_csWeb.setOnTouchListener(new View.OnTouchListener()
-            {
-                @Override
-                public boolean onTouch(View v, MotionEvent event)
-                {
-                    try{
-                        //get the URL of the touched anchor tag
-                        WebView.HitTestResult hr = ((WebView)v).getHitTestResult();
-                        String str = null;
-                        if(null != hr) str = hr.getExtra();
-                        //check if it is the URL of the thumbnail of the video
-                        //which looks like
-                        //http://i.ytimg.com/vi/<VIDEOID>/hqdefault.jpg?w=160&h=96&sigh=7exXMTRY7yiZm4hS4V_f9uVO-GU
-                        if(str!=null && str.startsWith("http://i.ytimg.com/vi/"))
-                        {
-                            String videoId = str.split("\\/")[4];
-                            //Everything is in place, now launch the activity
-                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +videoId));
-                            v.getContext().startActivity(i);
-                            return true;
-                        }
-                    }catch(NoClassDefFoundError e){
-                        e.printStackTrace();
-                    }catch(Exception e){
-                        e.printStackTrace();
+            m_csWeb.setOnTouchListener((v, event) -> {
+                try{
+                    //get the URL of the touched anchor tag
+                    WebView.HitTestResult hr = ((WebView)v).getHitTestResult();
+                    String str = null;
+                    if(null != hr) str = hr.getExtra();
+                    //check if it is the URL of the thumbnail of the video
+                    //which looks like
+                    //http://i.ytimg.com/vi/<VIDEOID>/hqdefault.jpg?w=160&h=96&sigh=7exXMTRY7yiZm4hS4V_f9uVO-GU
+                    if(str!=null && str.startsWith("http://i.ytimg.com/vi/"))
+                    {
+                        String videoId = str.split("\\/")[4];
+                        //Everything is in place, now launch the activity
+                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +videoId));
+                        v.getContext().startActivity(i);
+                        return true;
                     }
-                    return false;
+                }catch(NoClassDefFoundError | Exception e){
+                    e.printStackTrace();
                 }
+                return false;
             });
         }catch(NoClassDefFoundError e){
             e.printStackTrace();
@@ -406,12 +372,12 @@ public class WebViewer extends AppCompatActivity
                         //m_csWeb.setHttpAuthUsernamePassword(host, realm, up[0], up[1]);
                     }
                 }
-                @Override
-                public void onReceivedError (WebView view, int error, String desc, String failUrl) {
-                    Log.e("Log",		"errorCode:"+String.valueOf(error));
-                    Log.e("Description","Description:"+desc);
-                    Log.e("failUrl", 	"failUrl:"+failUrl);
-                }
+//                @Override
+//                public void onReceivedError (WebView view, int error, String desc, String failUrl) {
+//                    Log.e("Log",		"errorCode:"+String.valueOf(error));
+//                    Log.e("Description","Description:"+desc);
+//                    Log.e("failUrl", 	"failUrl:"+failUrl);
+//                }
                 @Override
                 public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error)
                 {
@@ -444,10 +410,7 @@ public class WebViewer extends AppCompatActivity
                     return bRet;
                 }
             });
-        }catch(NoClassDefFoundError e){
-            e.printStackTrace();
-            Toast.makeText(this, "WebViewClient Setting Error", Toast.LENGTH_SHORT).show();
-        }catch(Exception e){
+        }catch(NoClassDefFoundError | Exception e){
             e.printStackTrace();
             Toast.makeText(this, "WebViewClient Setting Error", Toast.LENGTH_SHORT).show();
         }
@@ -464,10 +427,7 @@ public class WebViewer extends AppCompatActivity
                     }
                 }
             });
-        }catch(NoClassDefFoundError e){
-            e.printStackTrace();
-            Toast.makeText(this, "WebChromeClient Setting Error", Toast.LENGTH_SHORT).show();
-        }catch(Exception e){
+        }catch(NoClassDefFoundError | Exception e){
             e.printStackTrace();
             Toast.makeText(this, "WebChromeClient Setting Error", Toast.LENGTH_SHORT).show();
         }
@@ -475,10 +435,7 @@ public class WebViewer extends AppCompatActivity
         try{
             // 画面右端の空白を消す
             m_csWeb.setVerticalScrollbarOverlay(true);
-        }catch(NoClassDefFoundError e){
-            e.printStackTrace();
-            Toast.makeText(this, "WebView Setting Error", Toast.LENGTH_SHORT).show();
-        }catch(Exception e){
+        }catch(NoClassDefFoundError | Exception e){
             e.printStackTrace();
             Toast.makeText(this, "WebView Setting Error", Toast.LENGTH_SHORT).show();
         }
@@ -494,11 +451,11 @@ public class WebViewer extends AppCompatActivity
     public static boolean isHoneycomb() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     }
-    public static boolean isHoneycombTablet(Context context) {
-        return isHoneycomb() && (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                == Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
+//    public static boolean isHoneycombTablet(Context context) {
+//        return isHoneycomb() && (context.getResources().getConfiguration().screenLayout
+//                & Configuration.SCREENLAYOUT_SIZE_MASK)
+//                == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+//    }
 
     // メッセージ表示
     public void ShowToast(String strMsg)
@@ -530,8 +487,12 @@ public class WebViewer extends AppCompatActivity
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("POST");
                 urlConnection.connect();
-            } catch(Exception e) {
-            } finally {
+            }
+            catch(Exception e)
+            {
+            }
+            finally
+            {
                 try {
                     if(urlConnection != null){
                         urlConnection.disconnect();

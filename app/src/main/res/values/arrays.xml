@@ -59,6 +59,18 @@
         -->
     </string-array>
 
+    <!-- 通貨名 -->
+    <string name="setting_currency0001">BTC</string>
+    <string name="setting_currency0002">ETH</string>
+    <string-array name="setting_currency">
+        <item>@string/setting_currency0001</item>
+        <item>@string/setting_currency0002</item>
+    </string-array>
+    <integer-array name="setting_currency_resid">
+        <item>@drawable/ic_icon_bitcoin</item>
+        <item>@drawable/ic_icon_ethereum</item>
+    </integer-array>
+
     <string-array name="setting_thema_labels">
         <item>ライトテーマ</item>
         <item>ダークテーマ</item>

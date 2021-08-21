@@ -10,22 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-        <!--
-        <com.ogaclejapan.smarttablayout.SmartTabLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/viewpagertab"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            app:stl_defaultTabTextColor="@color/black"
-            app:stl_defaultTabTextHorizontalPadding="24dp"
-            app:stl_dividerColors="@array/custom_tab_colors"
-            app:stl_indicatorColors="@array/custom_tab_colors"
-            app:stl_indicatorInterpolation="linear"
-            app:stl_indicatorThickness="3dp"
-            app:stl_underlineThickness="1dp"
-            />
-            -->
+
         <com.ogaclejapan.smarttablayout.SmartTabLayout
             android:id="@+id/viewpagertab"
             android:layout_width="match_parent"
@@ -69,7 +54,7 @@
             xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/adView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_alignParentBottom="true"
             ads:adSize="BANNER"

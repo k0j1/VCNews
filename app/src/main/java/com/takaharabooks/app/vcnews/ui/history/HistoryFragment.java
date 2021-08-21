@@ -121,7 +121,7 @@ public class HistoryFragment extends Fragment {
     public void InitListView(List<RssItem> items)
     {
         ListView RssList = (ListView)mRoot.findViewById(R.id.layout_rss_listview);
-        mAdapter = new RssItemListAdapter(this.getContext(), getActivity(), items, m_dbData);
+        mAdapter = new RssItemListAdapter(this.getContext(), items, m_dbData);
         // アダプタをリストビューにセットする
         ListViewFunc.InitListView((MainActivity) getActivity(), m_dbData, items, RssList, mAdapter);
 
