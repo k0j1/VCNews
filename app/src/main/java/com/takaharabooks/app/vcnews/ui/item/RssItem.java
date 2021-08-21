@@ -1,5 +1,8 @@
 package com.takaharabooks.app.vcnews.ui.item;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /***********************************************************************************************
  * RSS情報アイテムクラス
  ***********************************************************************************************/
@@ -16,7 +19,7 @@ public class RssItem
     // 記事のリンク
     private CharSequence mLink;
     // 記事のカテゴリ
-    private CharSequence mCategory;
+    private final List<CharSequence> mCategory;
     // 記事のイメージURL
     private CharSequence mImageURL;
     // 記事が広告かどうか
@@ -28,7 +31,7 @@ public class RssItem
         mTitle = "";
         mDate = "";
         mLink = "";
-        mCategory = "";
+        mCategory = new ArrayList<>();
         mImageURL = "";
         mIsAd = false;
     }
@@ -86,11 +89,37 @@ public class RssItem
     /***********************************************************************************************
      * カテゴリの取得・セット
      ***********************************************************************************************/
-    public CharSequence getCategory() {
-        return mCategory;
+    public List<CharSequence> getCategorys() { return mCategory; }
+    public CharSequence getCategory()
+    {
+        StringBuilder str = new StringBuilder();
+        int nSize = mCategory.size();
+        for(int nIndex=0; nIndex<nSize; nIndex++)
+        {
+            CharSequence strCategory = mCategory.get(nIndex);
+            if(strCategory.length()<=0) continue;
+            if(nIndex>0) str.append(",");
+            str.append(strCategory);
+        }
+        return str.toString();
     }
-    public void setCategory(CharSequence category) {
-        mCategory = category;
+    public void setCategory(CharSequence category)
+    {
+        String str = category.toString();
+        String[] strCategorys = str.split(",");
+        mCategory.clear();
+
+        for (String strCategory : strCategorys)
+        {
+            addCategory(strCategory);
+        }
+    }
+    public void addCategory(CharSequence category)
+    {
+        if(category.length() > 0)
+        {
+            mCategory.add(category);
+        }
     }
 
     /***********************************************************************************************
@@ -112,4 +141,9 @@ public class RssItem
     public void setAd(boolean bIsAd) {
         mIsAd = bIsAd;
     }
+
+    /***********************************************************************************************
+     * タグ取得
+     ***********************************************************************************************/
+    public String getTag() { return getSiteName().toString() + ":" + getLink().toString();}
 }

@@ -11,7 +11,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.takaharabooks.app.vcnews.R;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
@@ -33,13 +31,6 @@ public class HomeFragmentMulti extends Fragment
     private HomeViewModel mHomeViewModel = null;
     private View mFragmentHome;
     private AdView mAdView = null;
-    private Preferences_Common mPrefs;
-
-    //protected RssItemListAdapter mAdapter;
-    //    protected SpinnerAdapter mSpinnerAdapter;
-    //  protected ConbinateAdView m_csAd = null;
-    //AdLoader mAdLoader;
-    //private DB_Data m_dbData = null;
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -55,16 +46,22 @@ public class HomeFragmentMulti extends Fragment
         setHasOptionsMenu(true);
         mHomeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         mFragmentHome = inflater.inflate(R.layout.fragment_home_multi, container, false);
+
+        // 広告表示（リスト読み込み終わってから表示します）
+        mAdView = mFragmentHome.findViewById(R.id.adView);
+        InitAd();
+        loadAd();
+
         return mFragmentHome;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
-        mPrefs = new Preferences_Common(getContext());
-        FragmentPagerItems pages = new FragmentPagerItems(getContext());
+        Preferences_Common mPrefs = new Preferences_Common(getContext());
+        //FragmentPagerItems pages = new FragmentPagerItems(getContext());
         FragmentPagerItems.Creator PICreator = FragmentPagerItems.with(getContext());
-        final ArrayList<Preferences_Common.SiteInfo> arSiteInfo = mPrefs.getSiteInfo(getActivity());
+        final ArrayList<Preferences_Common.SiteInfo> arSiteInfo = mPrefs.getSiteInfo();
 
         // 「すべて」を追加
         Preferences_Common.SiteInfo siteInfo = new Preferences_Common.SiteInfo();
@@ -74,8 +71,10 @@ public class HomeFragmentMulti extends Fragment
         int nSize = arSiteInfo.size();
         for(int nIndex=0; nIndex<nSize; nIndex++)
         {
-            PICreator.add(arSiteInfo.get(nIndex).strSiteName, HomeFragment.class);
-            pages.add(FragmentPagerItem.of(arSiteInfo.get(nIndex).strSiteName, HomeFragment.class));
+            String strTagName = arSiteInfo.get(nIndex).strSiteName.toString();
+            if(strTagName.isEmpty()) strTagName = arSiteInfo.get(nIndex).strCategory.toString();
+            PICreator.add(strTagName, HomeFragment.class);
+            //pages.add(FragmentPagerItem.of(strTagName, HomeFragment.class));
         }
         mFragAdapter = new FragmentPagerItemAdapter( getChildFragmentManager(), PICreator.create())
         {
@@ -87,39 +86,28 @@ public class HomeFragmentMulti extends Fragment
                 if (item instanceof Fragment)
                 {
                     HomeFragment frag = (HomeFragment) item;
-                    frag.setSearchSiteName(arSiteInfo.get(position).strSiteName);
+                    frag.setSearchInfo(arSiteInfo.get(position).strSiteName, arSiteInfo.get(position).strCategory);
                 }
                 return item;
             }
         };
 
-        ViewPager viewPager = (ViewPager) mFragmentHome.findViewById(R.id.viewpager);
+        ViewPager viewPager = mFragmentHome.findViewById(R.id.viewpager);
         viewPager.setAdapter(mFragAdapter);
 
-        SmartTabLayout viewPagerTab = (SmartTabLayout) mFragmentHome.findViewById(R.id.viewpagertab);
+        SmartTabLayout viewPagerTab = mFragmentHome.findViewById(R.id.viewpagertab);
         viewPagerTab.setViewPager(viewPager);
 
-//        pages.add(FragmentPagerItem.of(getString(R.string.rss_site_name0000), HomeFragment.class));
-//        pages.add(FragmentPagerItem.of(getString(R.string.rss_site_name0001), HomeFragment.class));
-//        pages.add(FragmentPagerItem.of(getString(R.string.rss_site_name0002), HomeFragment.class));
-//        pages.add(FragmentPagerItem.of(getString(R.string.rss_site_name0001), HomeFragment.class));
-//        pages.add(FragmentPagerItem.of(getString(R.string.rss_site_name0002), HomeFragment.class));
+        // RSS読み込み後の処理
+        //final Observer<Boolean> loadAd = bLoadEnd ->
+        //{
+        //    if(bLoadEnd)
+        //    {
+        //
+        //    }
+        //};
+        //mHomeViewModel.getLoadEnd().observe(getViewLifecycleOwner(), loadAd);
 
-        // 広告表示（リスト読み込み終わってから表示します）
-        mAdView = mFragmentHome.findViewById(R.id.adView);
-        final Observer<Boolean> loadAd = new Observer<Boolean>()
-        {
-            @Override
-            public void onChanged(final Boolean bLoadEnd)
-            {
-                if(bLoadEnd)
-                {
-                    //InitAd();
-                    //loadAd();
-                }
-            }
-        };
-        mHomeViewModel.getLoadEnd().observe(getViewLifecycleOwner(), loadAd);
     }
 
     /*************************************
@@ -127,9 +115,11 @@ public class HomeFragmentMulti extends Fragment
      **************************************/
     public void InitAd()
     {
-        if(mAdView != null) return;
+        if(mAdView == null) return;
 
-        MobileAds.initialize(getContext());
+        MobileAds.initialize(getContext(), initializationStatus -> {
+
+        });
         //MobileAds.openDebugMenu(getContext(),"ca-app-pub-2980262928639137/9972463179");
 //        mAdView.setAdListener(new AdListener() {
 //            @Override

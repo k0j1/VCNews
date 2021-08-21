@@ -2,7 +2,6 @@ package com.takaharabooks.app.vcnews.ui.home;
 
 import android.content.SharedPreferences;
 
-import com.takaharabooks.app.vcnews.MainActivity;
 import com.takaharabooks.app.vcnews.R;
 import com.takaharabooks.app.vcnews.ui.item.RssItem;
 import com.takaharabooks.app.vcnews.ui.item.RssItemParserTask;
@@ -15,57 +14,60 @@ import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 public class HomeViewModel extends ViewModel {
-    private MainActivity mActivity;
+    //private MainActivity mActivity;
     List<HomeFragment> mFragmentList = null;
     private SharedPreferences mPrefs = null;
     boolean mbLoading = false;
 
-    String[] strUrl;
-    String[] strName;
+    String[] strUrl = null;
+    String[] strName = null;
     RssItemParserTask task;
 
-    private MutableLiveData<Boolean> mbLoadEnd;
-    public MutableLiveData<Boolean> getLoadEnd()
-    {
-        mbLoadEnd = new MutableLiveData();
-        mbLoadEnd.setValue(false);
-        return mbLoadEnd;
-    }
-    private MutableLiveData<List<RssItem>> mItems;
+//    private MutableLiveData<Boolean> mbLoadEnd;
+//    public MutableLiveData<Boolean> getLoadEnd()
+//    {
+//        mbLoadEnd = new MutableLiveData();
+//        mbLoadEnd.setValue(false);
+//        return mbLoadEnd;
+//    }
+    private MutableLiveData<List<RssItem>> mItems = null;
     private MutableLiveData<List<RssItem>> mCategoryItems;
-    public MutableLiveData<List<RssItem>> getItems(MainActivity ac, HomeFragment fragment)
+    public MutableLiveData<List<RssItem>> getItems(HomeFragment fragment)
     {
-        if(ac != null && mPrefs == null)
+        if(mFragmentList == null)
         {
-            mActivity = ac;
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(ac);
-            strUrl = mActivity.getResources().getStringArray(R.array.rss_url);
-            strName = mActivity.getResources().getStringArray(R.array.rss_site_name);
+            mFragmentList = new ArrayList<>();
         }
         if(fragment != null)
         {
-            if(mFragmentList == null)
-            {
-                mFragmentList = new ArrayList();
-            }
             mFragmentList.add(fragment);
         }
-        if(mPrefs != null && mFragmentList != null && mItems == null && !mbLoading)
+
+        if(!mbLoading && mItems == null)
         {
             mbLoading = true;
+
+            if(fragment != null)
+            {
+                if (null == mPrefs) mPrefs = PreferenceManager.getDefaultSharedPreferences(fragment.getContext());
+                if (null == strUrl) strUrl = fragment.getResources().getStringArray(R.array.rss_url);
+                if (null == strName) strName = fragment.getResources().getStringArray(R.array.rss_site_name);
+            }
             LoadRssItem(null, "");
         }
         return mItems;
     }
     public MutableLiveData<List<RssItem>> ReloadItems()
     {
+        if(mbLoading) return null;
+
         if(mItems != null)
         {
             mItems.getValue().clear();
             mItems.setValue(null);
             mItems = null;
         }
-        return getItems(null,null);
+        return getItems(null);
     }
 
 
@@ -75,7 +77,7 @@ public class HomeViewModel extends ViewModel {
 //        mText.setValue("This is home fragment");
     }
 
-    public void AddRssItem(List<RssItem> items)
+    private void AddRssItem(List<RssItem> items)
     {
         if(null!=mItems)
         {
@@ -97,19 +99,19 @@ public class HomeViewModel extends ViewModel {
         // Webから読み込み
         if(null==mItems)
         {
-            mItems = new MutableLiveData();
-            List<RssItem> items = new ArrayList();
+            mItems = new MutableLiveData<>();
+            List<RssItem> items = new ArrayList<>();
             mItems.setValue(items);
 
-            task = new RssItemParserTask(mActivity, this);
+            task = new RssItemParserTask(this);
 
             // 全てから
-            ArrayList<String> strUrlArray = new ArrayList();
-            ArrayList<String> strNameArray = new ArrayList();
+            ArrayList<String> strUrlArray = new ArrayList<>();
+            ArrayList<String> strNameArray = new ArrayList<>();
             boolean bDefaultValue = true;
             for(int nIndex=0; nIndex<strName.length; nIndex++)
             {
-                String strKey = "setting.rss_site2." + String.format("%04d", nIndex+1);
+                String strKey = String.format("setting.rss_site2.%04d", nIndex+1);
                 if(nIndex >= 2) bDefaultValue = false;
                 if(mPrefs.getBoolean(strKey, bDefaultValue))
                 {
@@ -123,8 +125,9 @@ public class HomeViewModel extends ViewModel {
         // 取得済みのデータから絞込み
         else
         {
-            mCategoryItems = new MutableLiveData();
-            for(int nIndex=0; nIndex<mItems.getValue().size(); nIndex++)
+            mCategoryItems = new MutableLiveData<>();
+            int nSize = mItems.getValue().size();
+            for(int nIndex=0; nIndex<nSize; nIndex++)
             {
                 RssItem item = mItems.getValue().get(nIndex);
                 if(null!=strSearchText)
@@ -150,6 +153,9 @@ public class HomeViewModel extends ViewModel {
 
     public void LoadFragment(List<RssItem> list)
     {
+        // mItemsに追加
+        AddRssItem(list);
+
         int nMax = mFragmentList.size();
         for(int nIndex=0; nIndex<nMax; nIndex++)
         {
@@ -157,12 +163,12 @@ public class HomeViewModel extends ViewModel {
             if(frag.isVisible())
             {
                 // データ表示
-                frag.AddRssItem(list);
+                //frag.AddRssItem(list);
                 //mFragment.InitCategory();
                 frag.InitListView(list);
             }
         }
         mbLoading = false;
-        if(mbLoadEnd!=null) mbLoadEnd.setValue(true);
+        //if(mbLoadEnd!=null) mbLoadEnd.setValue(true);
     }
 }

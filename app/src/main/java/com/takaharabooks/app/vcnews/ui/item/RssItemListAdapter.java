@@ -1,6 +1,5 @@
 package com.takaharabooks.app.vcnews.ui.item;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.Html;
@@ -10,11 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.takaharabooks.app.vcnews.R;
 import com.takaharabooks.app.vcnews.pref.DB_Data;
+import com.takaharabooks.app.vcnews.pref.Preferences_Common;
 import com.takaharabooks.app.vcnews.ui.common.ImageProcessor;
 
 import java.util.List;
@@ -24,29 +25,9 @@ import androidx.collection.LruCache;
 
 public class RssItemListAdapter extends ArrayAdapter<RssItem>
 {
-    //private MainActivity mActivity;
+    Preferences_Common mPrefCom;
     protected List<RssItem> mItems;
     private final DB_Data m_dbData;
-
-    /*******************************************
-     * バイトサイズをＭＢサイズに変換
-     *
-     * @param	lSize	バイトサイズ
-     * @return	MBサイズ
-     *******************************************/
-//    static public double ConvertMBSize(long lSize){
-//        return (double)lSize/1024/1024;
-//    }
-
-    /*******************************************
-     * MBサイズをBサイズに変換
-     *
-     * @param	lSize	MBサイズ
-     * @return	Bサイズ
-     *******************************************/
-    static public long ConvertMBtoBSize(long lSize){
-        return lSize*1024*1024;
-    }
 
     protected LruCache<String, Bitmap> mMemoryCache;
     protected ImageProcessor mProcessor;
@@ -76,29 +57,13 @@ public class RssItemListAdapter extends ArrayAdapter<RssItem>
             }
         }
     }
-//    public void addBitmapToMemoryCache(String key, Bitmap bitmap)
-//    {
-//        // 例外処理
-//        if(key == null) return;
-//        if(bitmap == null) return;
-//        if (getBitmapFromMemCache(key) == null) {
-//            mMemoryCache.put(key, bitmap);
-//        }
-//    }
-//    public Bitmap getBitmapFromMemCache(String key)
-//    {
-//        if(key == null) return null;
-//        return mMemoryCache.get(key);
-//    }
 
     // コンストラクタ
-    public RssItemListAdapter(Context context, Activity activity, List<RssItem> objects, DB_Data dbData) {
+    public RssItemListAdapter(Context context, List<RssItem> objects, DB_Data dbData) {
         super(context, 0, objects);
-        //mActivity = (MainActivity) activity;
+        mPrefCom = new Preferences_Common(context);
         mItems = objects;
         m_dbData = dbData;
-        //mContext.setTheme(R.style.Theme_VCNews);
-        //mTextColor = mContext.getColor(R.color.text_color);
         InitCache();
     }
 
@@ -127,13 +92,12 @@ public class RssItemListAdapter extends ArrayAdapter<RssItem>
         LayoutInflater Inflater = LayoutInflater.from(getContext());
         View view = convertView;
 
-        RssItem item = this.getItem(position);
-        String strTag = item.getSiteName().toString() + ":" + item.getLink().toString();
+        RssItem item = null;
 
         String imageURL = "";
-        if (null == view || (null != view && view.getTag() != strTag))
+        if (null == view || (null != view && view.getTag() != this.getItem(position).getTag()))
         {
-
+            item = this.getItem(position);
             imageURL = item.getImageURL().toString();
             imageURL.trim();
             if(imageURL.isEmpty())
@@ -158,24 +122,20 @@ public class RssItemListAdapter extends ArrayAdapter<RssItem>
             String date = item.getDate().toString();
             //CharSequence html = Html.fromHtml(String.format("%s", link, title));
 
-            view.setTag(strTag);
+            view.setTag(item.getTag());
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 画像セット
             if(!imageURL.isEmpty())
             {
-                ImageView mImage = (ImageView) view.findViewById(R.id.item_sumb_img);
+                ImageView mImage = view.findViewById(R.id.item_sumb_img);
                 //ListViewFunc.loadDLImage(mActivity, link, mImage, "item_sumb_img");
                 Glide.with(getContext()).load(imageURL).into(mImage);
             }
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // タイトルセット（記事概要）
-            // この時点ではテーマ無
-//            int nColor = getContext().getColor(R.color.text_color);
-//            int nColor2 = mContext.getColor(R.color.text_color);
-//            int nColor3 = mActivity.getColor(R.color.text_color);
-            TextView mTitle = (TextView) view.findViewById(R.id.item_title);
+            TextView mTitle = view.findViewById(R.id.item_title);
             //mTitle.setTextColor(mTextColor);
             mTitle.setText(title);
 
@@ -183,7 +143,7 @@ public class RssItemListAdapter extends ArrayAdapter<RssItem>
             //boolean bFavorite = m_dbData.IsFavoriteData(item.getLink().toString());
             //String strStar = "";
             //if(bFavorite) strStar = "<font color=#cccc00>★</font>";
-            ImageView imageFav = (ImageView)view.findViewById(R.id.item_fav_img);
+            ImageView imageFav = view.findViewById(R.id.item_fav_img);
             if(m_dbData.IsFavoriteData(link))
             {
                 imageFav.setImageResource(R.drawable.ic_icon_favorite_on);
@@ -192,27 +152,23 @@ public class RssItemListAdapter extends ArrayAdapter<RssItem>
             {
                 imageFav.setImageResource(R.drawable.ic_icon_favorite_off);
             }
-            imageFav.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    ImageView img = (ImageView)v;
-                    if(item.getFavoriteNo()==0) {
-                        img.setImageResource(R.drawable.ic_icon_favorite_on);
-                        m_dbData.InsertFavoriteDataInfo(item);
-                        item.setFavoriteNo(1);
-                    }else{
-                        img.setImageResource(R.drawable.ic_icon_favorite_off);
-                        m_dbData.DeleteFavoriteData(link);
-                        item.setFavoriteNo(0);
-                    }
+            RssItem finalItem = item;
+            imageFav.setOnClickListener(v -> {
+                ImageView img = (ImageView)v;
+                if(finalItem.getFavoriteNo()==0) {
+                    img.setImageResource(R.drawable.ic_icon_favorite_on);
+                    m_dbData.InsertFavoriteDataInfo(finalItem);
+                    finalItem.setFavoriteNo(1);
+                }else{
+                    img.setImageResource(R.drawable.ic_icon_favorite_off);
+                    m_dbData.DeleteFavoriteData(link);
+                    finalItem.setFavoriteNo(0);
                 }
             });
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 日付セット
-            TextView mDate = (TextView) view.findViewById(R.id.item_date);
+            TextView mDate = view.findViewById(R.id.item_date);
 //            CharSequence htmlDate = Html.fromHtml(String.format("%s年%s月%s日 %s",
 //                    date.substring(0, 4), date.substring(5, 7), date.substring(8, 10), date.substring(11, 19))
 //            );
@@ -220,9 +176,40 @@ public class RssItemListAdapter extends ArrayAdapter<RssItem>
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // サイト名セット
-            TextView mSite = (TextView) view.findViewById(R.id.item_site);
+            TextView mSite = view.findViewById(R.id.item_site);
             CharSequence htmlSite = Html.fromHtml(String.format("<font color=gray>%s</font>", strSiteName));
             mSite.setText(htmlSite);
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // 通貨イメージセット
+            RelativeLayout layout = view.findViewById(R.id.item_container);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(32,32);
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT,RelativeLayout.TRUE);
+            String[] strCurrencys = mPrefCom.getArraysString(R.array.setting_currency);
+            //int[] nCurResID = mPrefCom.getArraysInt(R.array.setting_currency_resid);
+            for(int nIndex=0; nIndex<strCurrencys.length; nIndex++)
+            {
+                String strCurrency = strCurrencys[nIndex];
+                if (item.getCategory().toString().contains(strCurrency)) {
+                    ImageView mCurImage = new ImageView(getContext());
+                    switch(strCurrency)
+                    {
+                        case "BTC":
+                            mCurImage.setImageResource(R.drawable.ic_icon_bitcoin);
+                            break;
+                        case "ETH":
+                            mCurImage.setImageResource(R.drawable.ic_icon_ethereum);
+                            break;
+                    }
+                    int nID = nIndex+1;
+                    mCurImage.setId(nID);
+                    layout.addView(mCurImage, params);
+                    params = new RelativeLayout.LayoutParams(32,32);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+                    params.addRule(RelativeLayout.RIGHT_OF, nID);
+                }
+            }
         }
         return view;
     }
