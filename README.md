@@ -22,7 +22,5 @@ https://play.google.com/store/apps/details?id=com.takaharabooks.app.vcnews
 * 履歴  
 * アプリ内ウェブビュー  
 * ダークテーマに対応  
-
-【搭載予定】  
-* 通貨別ソート機能  
+* サイト別、通貨別ソート機能  
 
