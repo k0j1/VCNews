@@ -1,4 +1,4 @@
-# COINNEWSまとめ
+# COINNEWSまとめ Ver.1.0.0
 
 ANDROIDアプリとして公開中  
 
